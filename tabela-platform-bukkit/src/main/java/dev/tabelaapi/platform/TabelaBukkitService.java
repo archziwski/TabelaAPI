@@ -4,26 +4,24 @@ import dev.tabelaapi.api.*;
 import dev.tabelaapi.core.SessionRegistry;
 import dev.tabelaapi.core.TabelaRateLimiter;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.time.Instant;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public final class TabelaBukkitService {
     private final SignTransport transport;
+    private final Plugin plugin;
     private final SessionRegistry sessions = new SessionRegistry();
     private final TabelaRateLimiter rateLimiter = new TabelaRateLimiter(java.time.Duration.ofMillis(250));
-    private final ScheduledExecutorService timeoutExecutor;
-
-    public TabelaBukkitService(SignTransport transport, ScheduledExecutorService timeoutExecutor) { this.transport = transport; this.timeoutExecutor = timeoutExecutor; }
+    public TabelaBukkitService(Plugin plugin, SignTransport transport) { this.plugin = plugin; this.transport = transport; }
     public TabelaSession open(Player player, TabelaPrompt prompt) {
         if (!rateLimiter.allow(player.getUniqueId())) throw new TabelaOpenException("Tabela ekranını çok sık açıyorsun.");
         close(player);
         TabelaSession session = new TabelaSession(UUID.randomUUID(), player.getUniqueId(), Instant.now());
         sessions.put(session);
         try { transport.open(player, prompt); } catch (RuntimeException exception) { sessions.remove(player.getUniqueId()); throw exception; }
-        timeoutExecutor.schedule(() -> expire(player, session, prompt), prompt.timeout().toMillis(), TimeUnit.MILLISECONDS);
+        player.getScheduler().runDelayed(plugin, task -> expire(player, session, prompt), () -> { }, Math.max(1, prompt.timeout().toMillis() / 50));
         return session;
     }
     public void complete(Player player, TabelaSession session, TabelaPrompt prompt, String... lines) {

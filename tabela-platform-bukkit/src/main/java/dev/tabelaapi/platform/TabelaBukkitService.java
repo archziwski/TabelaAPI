@@ -20,7 +20,7 @@ public final class TabelaBukkitService {
         close(player);
         TabelaSession session = new TabelaSession(UUID.randomUUID(), player.getUniqueId(), Instant.now());
         sessions.put(session);
-        try { transport.open(player, prompt); } catch (RuntimeException exception) { sessions.remove(player.getUniqueId()); throw exception; }
+        try { transport.open(player, prompt, lines -> complete(player, session, prompt, lines)); } catch (RuntimeException exception) { sessions.remove(player.getUniqueId()); throw exception; }
         player.getScheduler().runDelayed(plugin, task -> expire(player, session, prompt), () -> { }, Math.max(1, prompt.timeout().toMillis() / 50));
         return session;
     }
@@ -30,7 +30,7 @@ public final class TabelaBukkitService {
         for (String line : result.lines()) {
             if (prompt.validateAllLines() || line.equals(result.line(0))) {
                 TabelaValidationResult validation = prompt.validation().validate(TabelaText.normalize(line));
-                if (!validation.valid()) { transport.open(player, prompt); return; }
+                if (!validation.valid()) { transport.open(player, prompt, retry -> complete(player, session, prompt, retry)); return; }
             }
             if (!prompt.validateAllLines()) break;
         }
@@ -47,7 +47,11 @@ public final class TabelaBukkitService {
     private boolean isCurrent(Player player, TabelaSession session) { return session.equals(sessions.get(player.getUniqueId())); }
     private void apply(Player player, TabelaAction action) {
         if (action instanceof TabelaAction.Close) close(player);
-        else if (action instanceof TabelaAction.Reopen reopen) transport.open(player, TabelaPrompt.builder().lines(reopen.lines().toArray(String[]::new)).build());
+        else if (action instanceof TabelaAction.Reopen reopen) {
+            TabelaPrompt prompt = TabelaPrompt.builder().lines(reopen.lines().toArray(String[]::new)).build();
+            TabelaSession session = sessions.get(player.getUniqueId());
+            if (session != null) transport.open(player, prompt, lines -> complete(player, session, prompt, lines));
+        }
         else if (action instanceof TabelaAction.Message message) player.sendMessage(message.text());
     }
 }

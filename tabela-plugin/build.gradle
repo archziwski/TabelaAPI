@@ -9,7 +9,18 @@ dependencies {
 
 tasks.withType(JavaCompile).configureEach { options.release = 21 }
 
+processResources {
+    filesMatching('plugin.yml') { expand(version: project.version) }
+}
+
 tasks.jar {
     archiveBaseName = 'TabelaAPI'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn configurations.runtimeClasspath
+    from({
+        configurations.runtimeClasspath
+            .filter { it.exists() }
+            .collect { it.isDirectory() ? it : zipTree(it) }
+    })
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
 }

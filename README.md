@@ -1,14 +1,40 @@
 # TabelaAPI
 
-Türk Minecraft sunucuları için paket tabanlı, geçici tabela giriş ekranı API’si.
+Türk Minecraft sunucuları için, oyunculara geçici sanal tabela girişi açmayı amaçlayan Java API/plugin projesi.
 
-TabelaAPI gerçek dünyaya tabela bloğu koymaz. Ekran yalnızca ilgili oyuncuya gösterilir; diğer oyuncular tabela görmez ve dünya verisi değişmez.
+> **Geliştirme durumu:** deneysel. Paper/Folia packet transport’u PacketEvents üzerinden eklendi; gerçek sunucuda Folia 26.2 entegrasyon testi henüz yapılmadı. Canlı sistemde kullanmadan önce test sunucusunda doğrulayın.
 
-## Durum
+## Proje
 
-Proje erken geliştirme aşamasındadır. API, oturum yönetimi, Türkçe doğrulayıcılar, plugin komutları, Folia scheduler sınırı ve Velocity bridge sözleşmesi hazırdır. Minecraft sürümüne özel packet transport adapter’ları ayrı modüllerde geliştirilmektedir.
+TabelaAPI geliştiricilerin bir oyuncudan satır satır metin istemesini sağlar. Geçici tabela görüntüsü yalnızca ilgili oyuncuya gönderilen packet’lerle oluşturulur; dünyaya tabela bloğu koyulmaz. Tabela girişi PacketEvents kullanır.
 
-## Örnek kullanım
+## Platform durumu
+
+- Java 21 ile derlenir.
+- Paper/Folia scheduler ve sanal tabela transport’u kaynak kodda bulunur.
+- PacketEvents 2.13+ sunucu plugin’i ayrıca kurulmalıdır (Folia 26.2 için 2.13.0).
+- Bukkit/Spigot, Velocity ve eski Minecraft sürümleri için üretime hazır adapter’lar henüz tamamlanmadı.
+- API, oturum modelleri, doğrulayıcılar ve örnek plugin kodu geliştirme aşamasındadır.
+
+## Kaynak koddan derleme
+
+Java 21 kurulu bir ortamda:
+
+```bash
+./gradlew build
+```
+
+Windows:
+
+```powershell
+./gradlew.bat build
+```
+
+Testleri ayrıca çalıştırmak için `./gradlew test` kullanın. Build’den sonra plugin paketi `tabela-plugin/build/libs/TabelaAPI-*.jar` yolunda oluşur. `tabela-platform-folia-*.jar` gibi alt modül JAR’ları tek başlarına plugin değildir ve `plugins/` klasörüne konmamalıdır.
+
+Kurulumda PacketEvents plugin’i ve yalnızca `tabela-plugin/build/libs/TabelaAPI-*.jar` dosyasını `plugins/` klasörüne koyun. `tabela-platform-folia` ayrı bir plugin değildir. CaptchaPlus kullanıyorsanız CaptchaPlus JAR’ını da ekleyin. PacketEvents, TabelaAPI, CaptchaPlus sırası plugin bağımlılıkları tarafından yönetilir.
+
+## API taslağı
 
 ```java
 TabelaAPI.open(player, TabelaPrompt.builder()
@@ -19,21 +45,15 @@ TabelaAPI.open(player, TabelaPrompt.builder()
     .build());
 ```
 
-## İlkeler
-
-- SignGUI’den kod veya dosya kopyalanmamıştır.
-- Paper birincil platformdur; Folia scheduler kuralları baştan uygulanır.
-- Oyuncu girdisi güvenilmez kabul edilir.
-- Varsayılan mesajlar Türkçedir.
-- API ve plugin sınırları birbirinden ayrıdır.
-
 ## Geliştirme
 
-```bash
-./gradlew test
-./gradlew build
-```
+- [CONTRIBUTING.md](CONTRIBUTING.md): yerel geliştirme ve PR süreci
+- [SECURITY.md](SECURITY.md): güvenlik açığı bildirimi
+- [CHANGELOG.md](CHANGELOG.md): sürüm geçmişi
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Issues](https://github.com/archziwski/TabelaAPI/issues)
+- [Releases](https://github.com/archziwski/TabelaAPI/releases)
 
 ## Lisans
 
-MIT. Ayrıntı için [LICENSE](LICENSE) dosyasına bakın.
+MIT. Ayrıntılar için [LICENSE](LICENSE) dosyasına bakın.

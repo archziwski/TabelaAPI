@@ -1,10 +1,11 @@
 name: TabelaAPI
 version: '${version}'
 main: dev.tabelaapi.plugin.TabelaPlugin
-api-version: '1.16'
+api-version: '1.20'
 folia-supported: true
 author: TabelaAPI Contributors
 description: Türkçe odaklı, paket tabanlı sanal tabela giriş API'si.
+depend: [packetevents]
 commands:
   tabela:
     description: TabelaAPI yönetim komutları

@@ -12,6 +12,7 @@ public final class TabelaPrompt {
     private final Function<TabelaResult, TabelaAction> complete;
     private final Function<TabelaResult, TabelaAction> cancel;
     private final Duration timeout;
+    private final boolean validateAllLines;
 
     private TabelaPrompt(Builder builder) {
         title = builder.title;
@@ -20,6 +21,7 @@ public final class TabelaPrompt {
         complete = builder.complete;
         cancel = builder.cancel;
         timeout = builder.timeout;
+        validateAllLines = builder.validateAllLines;
     }
 
     public String title() { return title; }
@@ -28,6 +30,7 @@ public final class TabelaPrompt {
     public Function<TabelaResult, TabelaAction> complete() { return complete; }
     public Function<TabelaResult, TabelaAction> cancel() { return cancel; }
     public Duration timeout() { return timeout; }
+    public boolean validateAllLines() { return validateAllLines; }
 
     public static Builder builder() { return new Builder(); }
 
@@ -38,6 +41,7 @@ public final class TabelaPrompt {
         private Function<TabelaResult, TabelaAction> complete = ignored -> TabelaAction.close();
         private Function<TabelaResult, TabelaAction> cancel = ignored -> TabelaAction.close();
         private Duration timeout = Duration.ofSeconds(60);
+        private boolean validateAllLines;
 
         public Builder title(String title) { this.title = Objects.requireNonNull(title); return this; }
         public Builder lines(String... lines) { this.lines = List.of(lines); return this; }
@@ -45,6 +49,7 @@ public final class TabelaPrompt {
         public Builder onComplete(Function<TabelaResult, TabelaAction> complete) { this.complete = Objects.requireNonNull(complete); return this; }
         public Builder onCancel(Function<TabelaResult, TabelaAction> cancel) { this.cancel = Objects.requireNonNull(cancel); return this; }
         public Builder timeout(Duration timeout) { this.timeout = Objects.requireNonNull(timeout); return this; }
+        public Builder validateAllLines(boolean validateAllLines) { this.validateAllLines = validateAllLines; return this; }
         public TabelaPrompt build() {
             if (lines.size() != 4) throw new IllegalArgumentException("Tabela ekranı tam olarak 4 satır ister");
             return new TabelaPrompt(this);

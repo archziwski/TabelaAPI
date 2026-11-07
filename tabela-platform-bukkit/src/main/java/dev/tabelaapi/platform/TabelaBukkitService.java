@@ -29,8 +29,13 @@ public final class TabelaBukkitService {
     public void complete(Player player, TabelaSession session, TabelaPrompt prompt, String... lines) {
         if (!isCurrent(player, session)) return;
         TabelaResult result = new TabelaResult(session, java.util.List.of(lines));
-        TabelaValidationResult validation = prompt.validation().validate(TabelaText.normalize(result.line(0)));
-        if (!validation.valid()) { transport.open(player, prompt); return; }
+        for (String line : result.lines()) {
+            if (prompt.validateAllLines() || line.equals(result.line(0))) {
+                TabelaValidationResult validation = prompt.validation().validate(TabelaText.normalize(line));
+                if (!validation.valid()) { transport.open(player, prompt); return; }
+            }
+            if (!prompt.validateAllLines()) break;
+        }
         apply(player, prompt.complete().apply(result));
     }
     public void cancel(Player player, TabelaCancelReason reason, TabelaPrompt prompt) {

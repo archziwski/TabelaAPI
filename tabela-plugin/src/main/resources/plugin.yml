@@ -1,0 +1,16 @@
+name: TabelaAPI
+version: '${version}'
+main: dev.tabelaapi.plugin.TabelaPlugin
+api-version: '1.16'
+folia-supported: true
+author: TabelaAPI Contributors
+description: Türkçe odaklı, paket tabanlı sanal tabela giriş API'si.
+commands:
+  tabela:
+    description: TabelaAPI yönetim komutları
+    usage: /tabela <reload|debug|test|version>
+permissions:
+  tabela.admin: { default: op }
+  tabela.reload: { default: op }
+  tabela.debug: { default: op }
+  tabela.test: { default: op }

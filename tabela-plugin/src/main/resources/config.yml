@@ -1,0 +1,8 @@
+language: tr_TR
+timeout-seconds: 60
+max-line-length: 64
+max-active-sessions: 100
+reopen-on-validation-error: true
+debug-packets: false
+metrics: false
+rate-limit-millis: 250

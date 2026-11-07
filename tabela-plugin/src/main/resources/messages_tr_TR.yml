@@ -1,0 +1,7 @@
+prefix: "&8[&6Tabela&8] &r"
+reloaded: "&aAyarlar yenilendi."
+debug-on: "&aDebug modu açıldı."
+debug-off: "&eDebug modu kapatıldı."
+version: "&fTabelaAPI sürümü: &6%version%"
+test-opened: "&aTest tabela ekranı açılıyor."
+no-permission: "&cBu komut için yetkin yok."

@@ -1,0 +1,15 @@
+plugins { id 'maven-publish' }
+
+dependencies {
+    implementation project(':tabela-platform-paper')
+    implementation project(':tabela-platform-folia')
+    implementation project(':tabela-platform-legacy')
+    compileOnly 'io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT'
+}
+
+tasks.withType(JavaCompile).configureEach { options.release = 21 }
+
+tasks.jar {
+    archiveBaseName = 'TabelaAPI'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

@@ -1,0 +1,30 @@
+allprojects {
+    group = 'dev.tabelaapi'
+    version = providers.gradleProperty('version').orElse('0.1.0-SNAPSHOT').get()
+}
+
+subprojects {
+    apply plugin: 'java-library'
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.release = 17
+        options.encoding = 'UTF-8'
+        options.compilerArgs += ['-Xlint:all', '-Werror']
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        testLogging { events 'passed', 'skipped', 'failed' }
+    }
+
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:5.11.4')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation 'org.assertj:assertj-core:3.27.3'
+    }
+}

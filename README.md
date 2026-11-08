@@ -10,11 +10,19 @@ TabelaAPI geliştiricilerin bir oyuncudan satır satır metin istemesini sağlar
 
 ## Platform durumu
 
-- Java 21 ile derlenir.
-- Paper/Folia scheduler ve sanal tabela transport’u kaynak kodda bulunur.
+- Java 21 ile derlenir; bu nedenle sunucu da Java 21 çalıştırmalıdır.
+- Desteklenen minimum sürüm Paper/Folia 1.20.6’dır (`api-version: 1.20`).
+- Paper/Folia scheduler ve sanal tabela transport’u kaynak kodda bulunur; servis katmanı platforma özgü scheduler çağrısı içermez.
 - PacketEvents 2.13+ sunucu plugin’i ayrıca kurulmalıdır (Folia 26.2 için 2.13.0).
-- Bukkit/Spigot, Velocity ve eski Minecraft sürümleri için üretime hazır adapter’lar henüz tamamlanmadı.
+- Bukkit/Spigot, Velocity ve 1.20.6 öncesi Minecraft sürümleri için üretime hazır adapter’lar henüz tamamlanmadı. Spigot’ta sanal tabela transport’u bulunmadığından plugin yüklenmez.
 - API, oturum modelleri, doğrulayıcılar ve örnek plugin kodu geliştirme aşamasındadır.
+
+## Yapılandırma
+
+`config.yml` içindeki `timeout-seconds`, `max-line-length`, `max-active-sessions`, `rate-limit-millis`,
+`reopen-on-validation-error` ve `language` değerleri çalışma zamanında okunur; `/tabela reload`
+ayarları yeniden yükler. Komut mesajları `messages_<language>.yml` dosyasından gelir ve dosya yoksa
+`messages_tr_TR.yml` kullanılır.
 
 ## Kaynak koddan derleme
 
@@ -40,7 +48,7 @@ Kurulumda PacketEvents plugin’i ve yalnızca `tabela-plugin/build/libs/TabelaA
 TabelaAPI.open(player, TabelaPrompt.builder()
     .title("Oyuncu adı")
     .lines("İsmini yaz", "", "", "")
-    .validator(TabelaValidators.playerName())
+    .validator(0, TabelaValidators.playerName())
     .onComplete(result -> TabelaAction.close())
     .build());
 ```

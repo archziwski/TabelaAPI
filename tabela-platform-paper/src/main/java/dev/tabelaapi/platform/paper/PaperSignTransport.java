@@ -23,7 +23,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import net.kyori.adventure.text.Component;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,11 +45,11 @@ public final class PaperSignTransport implements SignTransport {
 
                 WrapperPlayClientUpdateSign packet = new WrapperPlayClientUpdateSign(event);
                 Editor editor = editors.get(player.getUniqueId());
-                if (editor == null || !editor.matches(packet.getBlockPosition().getX(),
+                if (editor == null || !editor.matches(player, packet.getBlockPosition().getX(),
                     packet.getBlockPosition().getY(), packet.getBlockPosition().getZ())) return;
 
                 event.setCancelled(true);
-                String[] lines = Arrays.copyOf(packet.getTextLines(), 4);
+                String[] lines = padLines(packet.getTextLines());
                 if (editors.remove(player.getUniqueId(), editor)) {
                     player.getScheduler().run(plugin, task -> {
                         restore(player, editor.location());
@@ -112,6 +111,8 @@ public final class PaperSignTransport implements SignTransport {
     }
 
     private void restore(Player player, Location location) {
+        // A player who changed worlds must not receive block data for the old world's coordinates.
+        if (!player.getWorld().equals(location.getWorld())) return;
         Block block = location.getBlock();
         BlockData currentData = block.getBlockData();
         BlockState state = block.getState();
@@ -121,9 +122,19 @@ public final class PaperSignTransport implements SignTransport {
         }
     }
 
+    /** Copies the packet's lines into four non-null entries. */
+    private static String[] padLines(String[] lines) {
+        String[] padded = new String[4];
+        for (int i = 0; i < padded.length; i++) {
+            padded[i] = lines != null && i < lines.length && lines[i] != null ? lines[i] : "";
+        }
+        return padded;
+    }
+
     private record Editor(Location location, Consumer<String[]> result) {
-        private boolean matches(int x, int y, int z) {
-            return location.getBlockX() == x && location.getBlockY() == y && location.getBlockZ() == z;
+        private boolean matches(Player player, int x, int y, int z) {
+            return player.getWorld().equals(location.getWorld())
+                && location.getBlockX() == x && location.getBlockY() == y && location.getBlockZ() == z;
         }
     }
 }

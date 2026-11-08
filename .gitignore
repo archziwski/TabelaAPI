@@ -1,7 +1,10 @@
 .gradle/
 build/
 */build/
+bin/
+*/bin/
 .idea/
 *.iml
 out/
+outputs/
 work/

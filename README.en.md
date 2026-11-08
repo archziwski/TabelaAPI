@@ -10,11 +10,19 @@ TabelaAPI lets plugin developers request text lines from a player. A temporary s
 
 ## Platform status
 
-- Builds with Java 21.
-- Paper/Folia scheduler support and virtual-sign transport are present in source.
+- Builds with Java 21, so the server must run Java 21 as well.
+- The minimum supported server version is Paper/Folia 1.20.6 (`api-version: 1.20`).
+- Paper/Folia scheduler support and virtual-sign transport are present in source; the service layer contains no platform-specific scheduling call.
 - PacketEvents 2.13+ must also be installed as a server plugin (2.13.0 for Folia 26.2).
-- Production-ready adapters for Bukkit/Spigot, Velocity, and legacy Minecraft versions are not complete.
+- Production-ready adapters for Bukkit/Spigot, Velocity, and Minecraft versions before 1.20.6 are not complete. Spigot lacks the virtual-sign transport, so the plugin will not load there.
 - The API, session models, validators, and example plugin are under development.
+
+## Configuration
+
+`timeout-seconds`, `max-line-length`, `max-active-sessions`, `rate-limit-millis`,
+`reopen-on-validation-error` and `language` in `config.yml` are read at runtime; `/tabela reload`
+reloads them. Command messages come from `messages_<language>.yml`, falling back to
+`messages_tr_TR.yml`.
 
 ## Build from source
 
@@ -40,7 +48,7 @@ Install PacketEvents and only the `TabelaAPI-*.jar` plugin package from `tabela-
 TabelaAPI.open(player, TabelaPrompt.builder()
     .title("Player name")
     .lines("Enter your name", "", "", "")
-    .validator(TabelaValidators.playerName())
+    .validator(0, TabelaValidators.playerName())
     .onComplete(result -> TabelaAction.close())
     .build());
 ```

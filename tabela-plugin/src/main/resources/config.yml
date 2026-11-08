@@ -1,8 +1,12 @@
+# Mesaj dosyası: messages_<language>.yml (yoksa messages_tr_TR.yml kullanılır).
 language: tr_TR
+# Tabela ekranının kendiliğinden kapanma süresi (saniye).
 timeout-seconds: 60
+# Tek satırda kabul edilen en fazla karakter sayısı.
 max-line-length: 64
+# Aynı anda açık olabilecek en fazla tabela oturumu.
 max-active-sessions: 100
+# Doğrulama hatasında ekranı yeniden aç; false ise oturum iptal edilir.
 reopen-on-validation-error: true
-debug-packets: false
-metrics: false
+# Aynı oyuncunun iki tabela açması arasındaki en kısa süre (milisaniye).
 rate-limit-millis: 250
